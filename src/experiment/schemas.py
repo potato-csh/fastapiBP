@@ -1,42 +1,51 @@
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, String, SmallInteger, BigInteger, DateTime
-from sqlalchemy.sql import func
-from sqlalchemy.orm import DeclarativeBase
+from typing import List, Optional
+# from datetime import datetime
 
 
-class Base(DeclarativeBase):
+# class PydanticBase(BaseModel):
+    
+
+    # class Config:
+    #     orm_mode = True
+    #     arbitrary_types_allowed = True
+
+"""
+    id: int
+    experiment_id: str = Field(max_length=40, unique=True)
+    layer_name: str = Field(max_length=255)
+    name: Optional[str] = Field(max_length=255)
+    description: Optional[str] = Field(max_length=1024)
+    origin_url: Optional[str] = Field(max_length=512)
+    testing_url: Optional[str] = Field(max_length=512)
+    testing_type: int = 0
+    sampling_rate: int = 10
+    sampling_type: int = 0
+    start_time_preset: Optional[datetime]
+    end_time_preset: Optional[datetime]
+    start_time_real: Optional[datetime]
+    end_time_real: Optional[datetime]
+    update_time: Optional[datetime]
+    status: Optional[int] = 0
+    white_list: Optional[str] = Field(max_length=2048)
+    black_list: Optional[str] = Field(max_length=2048)
+    owner: int
+    starter: int
+    ender: int
+    hit_count: Optional[int] = 0
+    hit_key_count: Optional[int] = 0
+    hash_set: Optional[str] = Field(max_length=512, default=None)
+"""
+class Experiments(BaseModel):
+    name: Optional[str]
+    owner: Optional[int]
+    status: Optional[str]
+    layer_name: Optional[str]
+    
     pass
 
+class ExperimentCreate(BaseModel):
+    pass
 
-class Experiment(Base):
-    __tablename__ = "experiment"
-
-    id = Column(BigInteger, index=True, primary_key=True)
-    experiment_id = Column(String(40), unique=True)
-    layer_name = Column(String(25))
-    name = Column(String(255), nullable=True)
-    description = Column(String(1024), nullable=True)
-    origin_url = Column(String(512), nullable=True)
-    testing_url = Column(String(512), nullable=True)
-    testing_type = Column(SmallInteger, default=0)
-    sampling_rate = Column(SmallInteger, default=10)
-    sampling_type = Column(SmallInteger, default=0)
-    start_time_preset = Column(DateTime, nullable=True)
-    end_time_preset = Column(DateTime, nullable=True)
-    start_time_real = Column(DateTime, nullable=True)
-    end_time_real = Column(DateTime, nullable=True)
-    update_time = Column(
-        DateTime,
-        nullable=True,
-        default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
-    )
-    status = Column(SmallInteger, nullable=True, default=0)
-    white_list = Column(String(2048), nullable=True)
-    black_list = Column(String(2048), nullable=True)
-    owner = Column(SmallInteger)
-    starter = Column(SmallInteger)
-    ender = Column(SmallInteger)
-    hit_count = Column(BigInteger, default=0)
-    hit_key_count = Column(BigInteger, default=0)
-    hash_set = Column(String(2048), default=None)
+class ExperimentUpdate(BaseModel):
+    pass
