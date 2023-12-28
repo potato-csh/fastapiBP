@@ -1,10 +1,9 @@
 from fastapi import APIRouter
 
 
-
 router = APIRouter()
 
 
-
+@router.get("/exp_list")
 async def experiment_list():
-    pass
+    return {"test": "fastapi"}
