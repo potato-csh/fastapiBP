@@ -1,4 +1,5 @@
 from typing import Any
+from starlette.config import Config
 
 
 app_configs: dict[str, Any] = {
@@ -7,3 +8,5 @@ app_configs: dict[str, Any] = {
     "docs_url": "/docs",
     "redoc_url": "/redoc",
 }
+
+config = Config(".env")

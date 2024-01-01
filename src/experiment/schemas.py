@@ -1,11 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-# from datetime import datetime
+from datetime import datetime
 
 
 # class PydanticBase(BaseModel):
-    
-
     # class Config:
     #     orm_mode = True
     #     arbitrary_types_allowed = True
@@ -36,13 +34,24 @@ from typing import List, Optional
     hit_key_count: Optional[int] = 0
     hash_set: Optional[str] = Field(max_length=512, default=None)
 """
-class Experiments(BaseModel):
-    name: Optional[str]
-    owner: Optional[int]
-    status: Optional[str]
-    layer_name: Optional[str]
-    
-    pass
+class ExperimentList(BaseModel):
+    name: str
+    owner: int
+    status: str
+    layer_name: str
+
+class ExperimentListResponse(BaseModel):
+    id: int
+    experiment_id: str
+    name: str
+    layer_name: str
+    sampling_rate: int
+    owner: int
+    status: int
+    start_time_preset: datetime
+    end_time_preset: datetime
+    create_time: datetime
+    update_time: datetime
 
 class ExperimentCreate(BaseModel):
     pass
