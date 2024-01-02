@@ -1,6 +1,9 @@
 import uvicorn
 from typing import Dict
 from fastapi import FastAPI
+import os, sys
+
+sys.path.insert(0, os.getcwd())
 
 from config import app_configs
 from api import api_router

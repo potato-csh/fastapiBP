@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
-from models import Base
+from src.models import Base
 
 
 class Experiment(Base):
@@ -23,12 +23,6 @@ class Experiment(Base):
     end_time_preset: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     start_time_real: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     end_time_real: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    update_time: Mapped[datetime] = mapped_column(
-        DateTime,
-        nullable=True,
-        server_default=func.current_timestamp(),
-        server_onupdate=func.current_timestamp(),
-    )
     status: Mapped[int] = mapped_column(nullable=True, default=0)
     white_list: Mapped[str] = mapped_column(String(2048), nullable=True)
     black_list: Mapped[str] = mapped_column(String(2048), nullable=True)
