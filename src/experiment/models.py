@@ -1,15 +1,13 @@
-from sqlalchemy import Column, String, SmallInteger, BigInteger, DateTime
-from sqlalchemy.sql import func
+from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
-from src.models import Base
-
+from models import Base
+from experiment.schemas import ExperimentBase
 
 class Experiment(Base):
     __tablename__ = "experiment"
 
-    id: Mapped[int] = mapped_column(index=True, primary_key=True)
     experiment_id: Mapped[str] = mapped_column(String(40), unique=True)
     layer_name: Mapped[str] = mapped_column(String(25))
     name: Mapped[str] = mapped_column(String(255), nullable=True)
@@ -32,3 +30,18 @@ class Experiment(Base):
     hit_count: Mapped[int] = mapped_column(nullable=True, default=0)
     hit_key_count: Mapped[int] = mapped_column(nullable=True, default=0)
     hash_set: Mapped[str] = mapped_column(String(2048), default=None)
+
+    def to_dict(self) -> dict[ExperimentBase]:
+        return dict[ExperimentBase](
+            id=self.id,
+            experiment_id=self.experiment_id,
+            name=self.name,
+            layer_name=self.layer_name,
+            sampling_rate=self.sampling_rate,
+            owner=self.owner,
+            status=self.status,
+            start_time_preset=self.start_time_preset,
+            end_time_preset=self.end_time_preset,
+            create_at=self.create_at,
+            update_at=self.update_at
+        )

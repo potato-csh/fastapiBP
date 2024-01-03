@@ -1,11 +1,10 @@
-from typing import Dict, Any, List
-from sqlalchemy import create_engine, Select, Insert, Update, CursorResult
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 
 mysql_url_fmt = "mysql+pymysql://root:password@localhost:3306/ab_test"
 
-engine = create_engine(mysql_url_fmt)
+engine = create_engine(mysql_url_fmt, echo=True)
 
 db_session = Session(engine)
 

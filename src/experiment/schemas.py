@@ -1,23 +1,23 @@
-from typing import List, Optional
 from datetime import datetime
 
 from models import Pagination, ABTestBase
 
+
 class ExperimentBase(ABTestBase):
     id: int
-    experiment_id: str
-    name: str
+    experiment_id: str 
+    name: str | None
     layer_name: str
     sampling_rate: int
     owner: int
-    status: int
-    start_time_preset: datetime
-    end_time_preset: datetime
-    create_time: datetime
-    update_time: datetime
+    status: int | None
+    start_time_preset: datetime | None
+    end_time_preset: datetime | None
+    create_at: datetime | None
+    update_at: datetime | None
 
-class ExperimentList(Pagination):
-    items: List[ExperimentBase] = []
+class ExperimentPagination(Pagination):
+    items: list[ExperimentBase] = []
 
 class ExperimentCreate(ExperimentBase):
     pass
