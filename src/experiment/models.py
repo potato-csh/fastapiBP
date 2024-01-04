@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
 from models import Base
-from experiment.schemas import ExperimentBase
+from experiment.schemas import ExperimentBase, ExperimentDetail
 
 
 class ExperimentStatus(enum.IntEnum):
@@ -54,3 +54,6 @@ class Experiment(Base):
             create_at=self.create_at,
             update_at=self.update_at,
         )
+
+    def to_full_dict(self) -> dict[ExperimentDetail]:
+        pass

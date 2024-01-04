@@ -20,6 +20,21 @@ class ExperimentBase(ABTestBase):
 class ExperimentPagination(Pagination):
     items: list[ExperimentBase] = []
 
+class ExperimentDetail(ExperimentBase):
+    description: str
+    origin_url: str
+    testing_url: str
+    testing_type: int
+    sampling_type: int
+    start_time_real: datetime
+    end_time_real: datetime
+    white_list: str
+    black_list: str
+    starter: int
+    ender: int
+    hit_count: int
+    hit_key_count: int
+    hash_set: str
 
 class ExperimentCreate(ExperimentBase):
     pass

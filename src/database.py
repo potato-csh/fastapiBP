@@ -35,30 +35,6 @@ CommonParameters = Annotated[
 ]
 
 
-def search_filter_sort_paginate(
-    model,
-    filter_str,
-    db_session,
-    sort_by,
-    page_num,
-    page_size,
-):
-    # 偏移数
-    offset_num = page_size * (page_num - 1)
-
-    stmt = (
-        select(model)
-        .where(and_(*filter_str))
-        .order_by(sort_by)
-        .offset(offset_num)
-        .limit(page_size)
-    )
-
-    items = db_session.execute(stmt)
-
-    return items
-
-
 # async def fetch_one(select_query: Select | Insert | Update) -> Dict[str,Any]:
 #     async with engine.begin() as conn:
 #         cursor: CursorResult = await conn.execute(select_query)

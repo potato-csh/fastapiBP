@@ -1,12 +1,22 @@
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
 
+from utils import calculate_offset
 from experiment.models import Experiment, ExperimentStatus
-from experiment.schemas import ExperimentBase
+from experiment.schemas import ExperimentBase, ExperimentPagination
 
 
-def get_experiment_filter(name, owner, layer_name, status):
-    # 过滤条件拼接
+# 获取实验列表
+def get_experiment_list(
+        db_session: Session, 
+        sort_by: str, 
+        page_num: int, 
+        page_size: int, 
+        name, 
+        owner, 
+        layer_name, 
+        status) -> ExperimentPagination:
+    # 实验过滤条件
     filters = []
     if status:
         try:
@@ -23,19 +33,15 @@ def get_experiment_filter(name, owner, layer_name, status):
     if layer_name:
         filters.append(Experiment.layer_name == layer_name)
 
-    return filters
+    stmt = select(Experiment)\
+            .where(and_(*filters))\
+            .order_by(sort_by)\
+            .offset(calculate_offset(page_num, page_size))\
+            .limit(page_size)
 
+    experiment_list = db_session.execute(stmt)
+    items: list[ExperimentBase] = []
+    for experiment in experiment_list.scalars():
+        items.append(experiment.to_dict())
 
-# def get_experiment_list(db_session: Session, page_num, page_size,
-#                         name, owner, layer_name, status) -> list[ExperimentBase]:
-#     # 偏移数
-#     offset_num = page_size * (page_num - 1)
-
-#     stmt = select(Experiment).where(and_(*filters)).offset(offset_num).limit(page_size)
-
-#     experiment_list = db_session.execute(stmt)
-#     items: list[ExperimentBase] = []
-#     for experiment in experiment_list.scalars():
-#         items.append(experiment.to_dict())
-
-#     return items
+    return ExperimentPagination(items=items, page=page_num, total=len(items), itemsPerPage=page_size)
