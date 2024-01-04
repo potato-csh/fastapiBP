@@ -1,9 +1,18 @@
+import enum
 from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
 from models import Base
 from experiment.schemas import ExperimentBase
+
+
+class ExperimentStatus(enum.IntEnum):
+    PENDING = 0
+    RUNNING = 1
+    STOPPED = 2
+    DELETED = 3
+
 
 class Experiment(Base):
     __tablename__ = "experiment"
@@ -43,5 +52,5 @@ class Experiment(Base):
             start_time_preset=self.start_time_preset,
             end_time_preset=self.end_time_preset,
             create_at=self.create_at,
-            update_at=self.update_at
+            update_at=self.update_at,
         )
