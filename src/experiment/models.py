@@ -56,4 +56,18 @@ class Experiment(Base):
         )
 
     def to_full_dict(self) -> dict[ExperimentDetail]:
-        pass
+        return dict[ExperimentDetail](
+            **self.to_dict(),
+            description=self.description,
+            sampling_type=self.sampling_type,
+            origin_url=self.origin_url,
+            testing_url=self.testing_url,
+            testing_type=self.testing_type,
+            start_time_real=self.start_time_real,
+            end_time_real=self.end_time_real,
+            white_list=self.white_list,
+            black_list=self.black_list,
+            hit_count=self.hit_count,
+            hit_key_count=self.hit_key_count,
+            hash_set=self.hash_set,
+        )
