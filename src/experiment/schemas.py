@@ -1,9 +1,32 @@
 from datetime import datetime
+from fastapi import Query
+from pydantic import BaseModel, Field
 
-from models import Pagination, ABTestBase
+from models import PaginationResponse, ABTestBase
 
 
-class ExperimentBase(ABTestBase):
+class ExperimentList(BaseModel):
+    name: str = Field(None)
+    owner: int = Field(None)
+    layer_name: str = Field(None)
+    status: str = Field(None, enum=["PENDING", "RUNNING", "STOPPED", "DELETED"])
+
+
+class ExperimentCreate(ABTestBase):
+    name: str = (Field(),)
+    description: str = (Field(None),)
+    sampling_type: int = (Field(),)
+    sampling_rate: int = (Field(),)
+    layer_name: str = (Field(),)
+    testing_url: str = (Field(),)
+    testing_type: int = (Field(),)
+    white_list: str = (Field(None),)
+    black_list: str = (Field(None),)
+    start_time_preset: datetime = (Field(),)
+    end_time_preset: datetime = Field()
+
+
+class ExperimentBaseResponse(ABTestBase):
     name: str
     layer_name: str
     sampling_rate: int
@@ -12,7 +35,7 @@ class ExperimentBase(ABTestBase):
     end_time_preset: datetime | None  # require
 
 
-class ExperimentList(ExperimentBase):
+class ExperimentListResponse(ExperimentBaseResponse):
     id: int
     experiment_id: str
     status: int  # require 默认是0
@@ -20,11 +43,11 @@ class ExperimentList(ExperimentBase):
     update_at: datetime | None  # require
 
 
-class ExperimentPagination(Pagination):
-    items: list[ExperimentList] = []
+class ExperimentPaginationResponse(PaginationResponse):
+    items: list[ExperimentListResponse] = []
 
 
-class ExperimentDetail(ExperimentList):
+class ExperimentDetailResponse(ExperimentListResponse):
     description: str
     sampling_type: int
     origin_url: str
@@ -39,7 +62,7 @@ class ExperimentDetail(ExperimentList):
     hash_set: str
 
 
-class ExperimentCreate(ExperimentBase):
+class ExperimentCreateResponse(ExperimentBaseResponse):
     description: str | None
     origin_url: str
     sampling_type: int
@@ -49,5 +72,5 @@ class ExperimentCreate(ExperimentBase):
     black_list: str
 
 
-class ExperimentUpdate(ExperimentBase):
+class ExperimentUpdateResponse(ExperimentBaseResponse):
     pass

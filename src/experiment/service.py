@@ -3,12 +3,17 @@ from sqlalchemy.orm import Session
 
 from utils import calculate_offset
 from experiment.models import Experiment, ExperimentStatus
-from experiment.schemas import ExperimentList, ExperimentPagination, ExperimentDetail
+from experiment.schemas import (
+    ExperimentCreate,
+    ExperimentList,
+    ExperimentPaginationResponse,
+    ExperimentDetailResponse,
+)
 
 
 # 获取实验列表
 def get_experiment_list(
-    db_session: Session,
+    session: Session,
     sort_by: str,
     page_num: int,
     page_size: int,
@@ -16,7 +21,7 @@ def get_experiment_list(
     owner,
     layer_name,
     status,
-) -> ExperimentPagination:
+) -> ExperimentPaginationResponse:
     # 实验过滤条件
     filters = []
     if status:
@@ -42,19 +47,29 @@ def get_experiment_list(
         .limit(page_size)
     )
 
-    experiment_list = db_session.execute(stmt)
     items: list[ExperimentList] = []
-    for experiment in experiment_list.scalars():
-        items.append(experiment.to_dict())
+    for item in session.scalars(stmt):
+        items.append(item.to_dict())
 
-    return ExperimentPagination(
+    return ExperimentPaginationResponse(
         items=items, page=page_num, total=len(items), itemsPerPage=page_size
     )
 
 
 # 获取实验详情
-def get_experiment_detail(db_session: Session, experiment_id: str) -> ExperimentDetail:
+def get_experiment_detail(
+    session: Session, experiment_id: str
+) -> ExperimentDetailResponse:
     stmt = select(Experiment).where(Experiment.experiment_id == experiment_id)
-    experiment_detail = db_session.execute(stmt).scalar().to_full_dict()
+    experiment_detail = session.scalars(stmt).one_or_none().to_full_dict()
 
-    return ExperimentDetail(**experiment_detail)
+    return ExperimentDetailResponse(**experiment_detail)
+
+
+# 创建实验
+def experiment_create(session: Session, param: ExperimentCreate):
+    experiment = Experiment(
+        experiment_id=param.experiment_id,
+    )
+
+    pass

@@ -2,9 +2,9 @@ import enum
 from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
+from experiment.schemas import ExperimentBaseResponse, ExperimentDetailResponse
 
 from models import Base
-from experiment.schemas import ExperimentBase, ExperimentDetail
 
 
 class ExperimentStatus(enum.IntEnum):
@@ -40,8 +40,8 @@ class Experiment(Base):
     hit_key_count: Mapped[int] = mapped_column(nullable=True, default=0)
     hash_set: Mapped[str] = mapped_column(String(2048), default=None)
 
-    def to_dict(self) -> dict[ExperimentBase]:
-        return dict[ExperimentBase](
+    def to_dict(self) -> dict[ExperimentBaseResponse]:
+        return dict[ExperimentBaseResponse](
             id=self.id,
             experiment_id=self.experiment_id,
             name=self.name,
@@ -55,8 +55,8 @@ class Experiment(Base):
             update_at=self.update_at,
         )
 
-    def to_full_dict(self) -> dict[ExperimentDetail]:
-        return dict[ExperimentDetail](
+    def to_full_dict(self) -> dict[ExperimentDetailResponse]:
+        return dict[ExperimentDetailResponse](
             **self.to_dict(),
             description=self.description,
             sampling_type=self.sampling_type,

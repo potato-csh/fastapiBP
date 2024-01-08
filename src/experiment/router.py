@@ -1,34 +1,43 @@
-from fastapi import APIRouter, status, Path
+from fastapi import APIRouter, Query, status, Path
 
-from experiment.dependencies import ExperimentListParameters, CreateExperimentParameters
-from experiment.schemas import ExperimentPagination, ExperimentDetail, ExperimentCreate
-from experiment.service import get_experiment_list, get_experiment_detail
-from database import CommonParameters, DbSession
+from experiment.schemas import (
+    ExperimentDetailResponse,
+    ExperimentList,
+    ExperimentCreate,
+    ExperimentPaginationResponse,
+)
+from experiment.service import (
+    get_experiment_list,
+    get_experiment_detail,
+    experiment_create,
+)
+from database import DbSession
+from models import Commons
 
 
 router = APIRouter()
 
 
 @router.get(
-    "/list", status_code=status.HTTP_200_OK, response_model=ExperimentPagination
+    "/list",
+    # status_code=status.HTTP_200_OK,
+    # response_model=ExperimentPaginationResponse
 )
-async def experiment_list(
-    commons: CommonParameters, exp_list_param: ExperimentListParameters
-):
-    experiment_list = await get_experiment_list(**commons, **exp_list_param)
+def experiment_list(session: DbSession, commons: Commons, param: ExperimentList):
+    experiment_list = get_experiment_list(session=session, **commons, **param)
     return experiment_list
 
 
-@router.get("/{experiment_id}", response_model=ExperimentDetail)
-async def experiment_detail(db_session: DbSession, experiment_id: str = Path()):
-    experiment_detail = await get_experiment_detail(
-        db_session=db_session, experiment_id=experiment_id
+@router.get("/{experiment_id}", response_model=ExperimentDetailResponse)
+def experiment_detail(db_session: DbSession, experiment_id: str = Path()):
+    experiment_detail = get_experiment_detail(
+        session=db_session, experiment_id=experiment_id
     )
     return experiment_detail
 
 
-@router.post(response_model=ExperimentCreate)
-async def create_experiment(
-    db_session: DbSession, create_exp_param: CreateExperimentParameters
-):
-    pass
+@router.post("")
+def create_experiment(db_session: DbSession, param: ExperimentCreate):
+    experiment = experiment_create(session=db_session, param=param)
+
+    return experiment.id
