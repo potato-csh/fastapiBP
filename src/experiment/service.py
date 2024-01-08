@@ -1,13 +1,14 @@
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
+from uuid import uuid4
 
 from utils import calculate_offset
 from experiment.models import Experiment, ExperimentStatus
 from experiment.schemas import (
-    ExperimentCreate,
-    ExperimentList,
-    ExperimentPaginationResponse,
+    ExperimentPagination,
+    ExperimentListResponse,
     ExperimentDetailResponse,
+    ExperimentCreate
 )
 
 
@@ -21,7 +22,7 @@ def get_experiment_list(
     owner,
     layer_name,
     status,
-) -> ExperimentPaginationResponse:
+) -> ExperimentPagination:
     # 实验过滤条件
     filters = []
     if status:
@@ -47,11 +48,11 @@ def get_experiment_list(
         .limit(page_size)
     )
 
-    items: list[ExperimentList] = []
+    items: list[ExperimentListResponse] = []
     for item in session.scalars(stmt):
         items.append(item.to_dict())
 
-    return ExperimentPaginationResponse(
+    return ExperimentPagination(
         items=items, page=page_num, total=len(items), itemsPerPage=page_size
     )
 
@@ -68,8 +69,22 @@ def get_experiment_detail(
 
 # 创建实验
 def experiment_create(session: Session, param: ExperimentCreate):
+    experiment_id = uuid4()
     experiment = Experiment(
-        experiment_id=param.experiment_id,
+        experiment_id=experiment_id,
+        layer_name=param.layer_name,
+        name=param.layer_name,
+        description=param.description,
+        testing_url=param.testing_url,
+        testing_type=param.testing_type,
+        sampling_rate=param.sampling_rate,
+        sampling_type=param.sampling_type,
+        white_list=param.white_list,
+        black_list=param.black_list,
+        start_time_preset=param.start_time_preset,
+        end_time_preset=param.end_time_preset,
     )
 
+    session.add(experiment)
+    
     pass

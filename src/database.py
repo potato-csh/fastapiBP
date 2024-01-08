@@ -16,24 +16,23 @@ def get_db(request: Request):
 DbSession = Annotated[Session, Depends(get_db)]
 
 
-# def common_parameters(
-#     session: DbSession,
-#     sort_by: str = Query("id"),
-#     page_num: int = Query(1, gt=0, lt=2147483647),
-#     page_size: int = Query(1, gt=-2, lt=2147483647),
-# ):
-#     return {
-#         "session": session,
-#         "sort_by": sort_by,
-#         "page_num": page_num,
-#         "page_size": page_size,
-#     }
+def common_parameters(
+    session: DbSession,
+    sort_by: str = Query("id"),
+    page_num: int = Query(1, gt=0, lt=2147483647),
+    page_size: int = Query(3, gt=-2, lt=2147483647),
+):
+    return {
+        "session": session,
+        "sort_by": sort_by,
+        "page_num": page_num,
+        "page_size": page_size,
+    }
 
 
-# CommonParameters = Annotated[
-#     dict[str, int | str | DbSession], Depends(common_parameters)
-# ]
-
+CommonParams = Annotated[
+    dict[str, int | str | DbSession], Depends(common_parameters)
+]
 
 # async def fetch_one(select_query: Select | Insert | Update) -> Dict[str,Any]:
 #     async with engine.begin() as conn:

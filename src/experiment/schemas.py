@@ -2,30 +2,47 @@ from datetime import datetime
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from models import PaginationResponse, ABTestBase
+from models import Pagination, ABTestBase
 
 
-class ExperimentList(BaseModel):
-    name: str = Field(None)
-    owner: int = Field(None)
-    layer_name: str = Field(None)
-    status: str = Field(None, enum=["PENDING", "RUNNING", "STOPPED", "DELETED"])
+from fastapi import Query, Depends
+from typing import Annotated
+
+# Query
+
+def experiment_list_parameters(
+    name: str = Query(None),
+    owner: int = Query(None),
+    layer_name: str = Query(None),
+    status: str = Query(None, enum=["PENDING", "RUNNING", "STOPPED", "DELETED"])
+):
+    return {
+        "name": name,
+        "owner": owner,
+        "layer_name": layer_name,
+        "status": status
+    }
+
+
+ExperimentListParams = Annotated[dict[str, int | str], Depends(experiment_list_parameters)]
 
 
 class ExperimentCreate(ABTestBase):
-    name: str = (Field(),)
-    description: str = (Field(None),)
-    sampling_type: int = (Field(),)
-    sampling_rate: int = (Field(),)
-    layer_name: str = (Field(),)
-    testing_url: str = (Field(),)
-    testing_type: int = (Field(),)
-    white_list: str = (Field(None),)
-    black_list: str = (Field(None),)
-    start_time_preset: datetime = (Field(),)
+    name: str = Field()
+    description: str = Field(None)
+    sampling_type: int = Field()
+    sampling_rate: int = Field()
+    layer_name: str = Field()
+    testing_url: str = Field()
+    testing_type: int = Field()
+    white_list: str = Field(None)
+    black_list: str = Field(None)
+    start_time_preset: datetime = Field()
     end_time_preset: datetime = Field()
 
 
+# Response...
+    
 class ExperimentBaseResponse(ABTestBase):
     name: str
     layer_name: str
@@ -43,7 +60,7 @@ class ExperimentListResponse(ExperimentBaseResponse):
     update_at: datetime | None  # require
 
 
-class ExperimentPaginationResponse(PaginationResponse):
+class ExperimentPagination(Pagination):
     items: list[ExperimentListResponse] = []
 
 
@@ -62,15 +79,15 @@ class ExperimentDetailResponse(ExperimentListResponse):
     hash_set: str
 
 
-class ExperimentCreateResponse(ExperimentBaseResponse):
-    description: str | None
-    origin_url: str
-    sampling_type: int
-    testing_type: int
-    testing_url: str
-    white_list: str
-    black_list: str
+# class ExperimentCreateResponse(ExperimentBaseResponse):
+#     description: str | None
+#     origin_url: str
+#     sampling_type: int
+#     testing_type: int
+#     testing_url: str
+#     white_list: str
+#     black_list: str
 
 
-class ExperimentUpdateResponse(ExperimentBaseResponse):
-    pass
+# class ExperimentUpdateResponse(ExperimentBaseResponse):
+#     pass

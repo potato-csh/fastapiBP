@@ -1,4 +1,5 @@
-from fastapi import Query
+from typing import Annotated
+from fastapi import Depends, Query
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
@@ -23,21 +24,11 @@ class Base(DeclarativeBase):
 
 
 class ABTestBase(BaseModel):
-    pass
-    # model_config = ConfigDict(
-    #     from_attributes = True,
-    #     arbitrary_types_allowed = True
-    # )
+    model_config = ConfigDict(from_attributes = True)
 
 
-class PaginationResponse(ABTestBase):
+class Pagination(ABTestBase):
     itemsPerPage: int
     page: int
     total: int
-
-
-class Commons(BaseModel):
-    # session: DbSession
-    sort_by: str = Field("id")
-    page_num: int = Field(1, gt=0, lt=2147483647)
-    page_size: int = Field(1, gt=-2, lt=2147483647)
+    
