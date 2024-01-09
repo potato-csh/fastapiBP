@@ -5,15 +5,14 @@ from uuid import uuid4
 from utils import calculate_offset
 from experiment.models import Experiment, ExperimentStatus
 from experiment.schemas import (
+    ExperimentList,
     ExperimentPagination,
-    ExperimentListResponse,
-    ExperimentDetailResponse,
-    ExperimentCreate
+    ExperimentRead,
+    ExperimentCreate,
 )
 
-
 # 获取实验列表
-def get_experiment_list(
+def get_all(
     session: Session,
     sort_by: str,
     page_num: int,
@@ -48,7 +47,7 @@ def get_experiment_list(
         .limit(page_size)
     )
 
-    items: list[ExperimentListResponse] = []
+    items: list[ExperimentList] = []
     for item in session.scalars(stmt):
         items.append(item.to_dict())
 
@@ -58,33 +57,32 @@ def get_experiment_list(
 
 
 # 获取实验详情
-def get_experiment_detail(
-    session: Session, experiment_id: str
-) -> ExperimentDetailResponse:
+def get_by_expid(session: Session, experiment_id: str) -> ExperimentRead:
     stmt = select(Experiment).where(Experiment.experiment_id == experiment_id)
     experiment_detail = session.scalars(stmt).one_or_none().to_full_dict()
 
-    return ExperimentDetailResponse(**experiment_detail)
+    return ExperimentRead(**experiment_detail)
 
 
 # 创建实验
-def experiment_create(session: Session, param: ExperimentCreate):
+def create(session: Session, exp_in: ExperimentCreate) -> ExperimentRead:
     experiment_id = uuid4()
     experiment = Experiment(
         experiment_id=experiment_id,
-        layer_name=param.layer_name,
-        name=param.layer_name,
-        description=param.description,
-        testing_url=param.testing_url,
-        testing_type=param.testing_type,
-        sampling_rate=param.sampling_rate,
-        sampling_type=param.sampling_type,
-        white_list=param.white_list,
-        black_list=param.black_list,
-        start_time_preset=param.start_time_preset,
-        end_time_preset=param.end_time_preset,
+        name=exp_in.layer_name,
+        description=exp_in.description,
+        layer_name=exp_in.layer_name,
+        testing_type=exp_in.testing_type,
+        testing_url=exp_in.testing_url,
+        sampling_rate=exp_in.sampling_rate,
+        sampling_type=exp_in.sampling_type,
+        white_list=exp_in.white_list if exp_in.white_list else None,  # 如果存在则存入
+        black_list=exp_in.black_list if exp_in.black_list else None,  # 如果存在则存入
+        owner=0,  # user
+        start_time_preset=exp_in.start_time_preset,
+        end_time_preset=exp_in.end_time_preset,
     )
 
     session.add(experiment)
-    
-    pass
+
+    return ExperimentRead(experiment)

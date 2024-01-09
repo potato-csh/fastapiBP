@@ -1,93 +1,53 @@
 from datetime import datetime
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import Field
+from uuid import UUID
+from typing import Optional
 
-from models import Pagination, ABTestBase
-
-
-from fastapi import Query, Depends
-from typing import Annotated
-
-# Query
-
-def experiment_list_parameters(
-    name: str = Query(None),
-    owner: int = Query(None),
-    layer_name: str = Query(None),
-    status: str = Query(None, enum=["PENDING", "RUNNING", "STOPPED", "DELETED"])
-):
-    return {
-        "name": name,
-        "owner": owner,
-        "layer_name": layer_name,
-        "status": status
-    }
+from models import Pagination, ABTestBase, PrimaryKey
 
 
-ExperimentListParams = Annotated[dict[str, int | str], Depends(experiment_list_parameters)]
+# Pydantic models
 
 
-class ExperimentCreate(ABTestBase):
-    name: str = Field()
-    description: str = Field(None)
-    sampling_type: int = Field()
-    sampling_rate: int = Field()
-    layer_name: str = Field()
-    testing_url: str = Field()
-    testing_type: int = Field()
-    white_list: str = Field(None)
-    black_list: str = Field(None)
-    start_time_preset: datetime = Field()
-    end_time_preset: datetime = Field()
-
-
-# Response...
-    
-class ExperimentBaseResponse(ABTestBase):
+class ExperimentBase(ABTestBase):
     name: str
     layer_name: str
-    sampling_rate: int
+    sampling_rate: int = Field(10)
+    start_time_preset: Optional[datetime] = Field(nullable=True)
+    end_time_preset: Optional[datetime] = Field(nullable=True)
+
+
+class ExperimentList(ExperimentBase):
     owner: int
-    start_time_preset: datetime | None  # require
-    end_time_preset: datetime | None  # require
+    status: int = Field(0)
+    id: PrimaryKey
+    experiment_id: UUID
+    created_at: datetime
+    updated_at: datetime
 
 
-class ExperimentListResponse(ExperimentBaseResponse):
-    id: int
-    experiment_id: str
-    status: int  # require 默认是0
-    create_at: datetime | None  # require
-    update_at: datetime | None  # require
-
-
-class ExperimentPagination(Pagination):
-    items: list[ExperimentListResponse] = []
-
-
-class ExperimentDetailResponse(ExperimentListResponse):
-    description: str
-    sampling_type: int
-    origin_url: str
+class ExperimentCreate(ExperimentBase):
+    origin_url: Optional[str] = Field(nullable=True)
+    description: str = Field(None)
+    sampling_type: int = Field(0)
+    testing_type: int = Field(0)
     testing_url: str
-    testing_type: int
-    start_time_real: datetime | None
-    end_time_real: datetime | None
-    white_list: str
-    black_list: str
-    hit_count: int
-    hit_key_count: int
-    hash_set: str
+    white_list: Optional[str] = Field(nullable=True)
+    black_list: Optional[str] = Field(nullable=True)
 
 
-# class ExperimentCreateResponse(ExperimentBaseResponse):
-#     description: str | None
-#     origin_url: str
-#     sampling_type: int
-#     testing_type: int
-#     testing_url: str
-#     white_list: str
-#     black_list: str
+class ExperimentRead(ExperimentList, ExperimentCreate):
+    start_time_real: Optional[datetime] = Field(nullable=True)
+    end_time_real: Optional[datetime] = Field(nullable=True)
+    hit_count: Optional[int] = Field(0, nullable=True)
+    hit_key_count: Optional[int] = Field(0, nullable=True)
+    hash_set: Optional[str] = Field(None, nullable=True)
 
 
 # class ExperimentUpdateResponse(ExperimentBaseResponse):
 #     pass
+
+
+class ExperimentPagination(Pagination):
+    items: list[ExperimentList] = []

@@ -4,19 +4,20 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, conint
 
-from database import DbSession
+
+# pydantic type that limits the range of primary keys
+PrimaryKey = conint(gt=0, lt=2147483647)
 
 
 class Base(DeclarativeBase):
-    id: Mapped[int] = mapped_column(index=True, primary_key=True, sort_order=-999)
-    create_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=True, server_default=func.current_timestamp(), sort_order=999
+    id: Mapped[int] = mapped_column(primary_key=True, sort_order=-999)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.current_timestamp(), sort_order=999
     )
-    update_at: Mapped[datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        nullable=True,
         server_default=func.current_timestamp(),
         server_onupdate=func.current_timestamp(),
         sort_order=999,
@@ -24,11 +25,10 @@ class Base(DeclarativeBase):
 
 
 class ABTestBase(BaseModel):
-    model_config = ConfigDict(from_attributes = True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Pagination(ABTestBase):
     itemsPerPage: int
     page: int
     total: int
-    
