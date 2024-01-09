@@ -1,6 +1,6 @@
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from utils import calculate_offset
 from experiment.models import Experiment, ExperimentStatus
@@ -8,7 +8,7 @@ from experiment.schemas import (
     ExperimentList,
     ExperimentPagination,
     ExperimentRead,
-    ExperimentCreate,
+    ExperimentCreateOrUpdate
 )
 
 # 获取实验列表
@@ -57,19 +57,19 @@ def get_all(
 
 
 # 获取实验详情
-def get_by_expid(session: Session, experiment_id: str) -> ExperimentRead:
-    stmt = select(Experiment).where(Experiment.experiment_id == experiment_id)
+def get_by_exp_id(session: Session, exp_id: str) -> ExperimentRead:
+    stmt = select(Experiment).where(Experiment.experiment_id == exp_id)
     experiment_detail = session.scalars(stmt).one_or_none().to_full_dict()
 
-    return ExperimentRead(**experiment_detail)
+    return experiment_detail
 
 
 # 创建实验
-def create(session: Session, exp_in: ExperimentCreate) -> ExperimentRead:
-    experiment_id = uuid4()
+def create(session: Session, exp_in: ExperimentCreateOrUpdate) -> ExperimentRead:
+    exp_id = uuid4()
     experiment = Experiment(
-        experiment_id=experiment_id,
-        name=exp_in.layer_name,
+        experiment_id=exp_id,
+        name=exp_in.name,
         description=exp_in.description,
         layer_name=exp_in.layer_name,
         testing_type=exp_in.testing_type,
@@ -84,5 +84,10 @@ def create(session: Session, exp_in: ExperimentCreate) -> ExperimentRead:
     )
 
     session.add(experiment)
+    session.commit()
 
-    return ExperimentRead(experiment)
+    return experiment
+
+
+def update(session: Session, exp_id: UUID, exp_in: ExperimentCreateOrUpdate):
+    pass

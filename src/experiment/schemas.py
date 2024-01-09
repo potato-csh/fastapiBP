@@ -14,8 +14,8 @@ class ExperimentBase(ABTestBase):
     name: str
     layer_name: str
     sampling_rate: int = Field(10)
-    start_time_preset: Optional[datetime] = Field(nullable=True)
-    end_time_preset: Optional[datetime] = Field(nullable=True)
+    start_time_preset: Optional[datetime] = Field(None, nullable=True)
+    end_time_preset: Optional[datetime] = Field(None, nullable=True)
 
 
 class ExperimentList(ExperimentBase):
@@ -27,8 +27,8 @@ class ExperimentList(ExperimentBase):
     updated_at: datetime
 
 
-class ExperimentCreate(ExperimentBase):
-    origin_url: Optional[str] = Field(nullable=True)
+class ExperimentCreateOrUpdate(ExperimentBase):
+    origin_url: Optional[str] = Field(None, nullable=True)
     description: str = Field(None)
     sampling_type: int = Field(0)
     testing_type: int = Field(0)
@@ -37,16 +37,12 @@ class ExperimentCreate(ExperimentBase):
     black_list: Optional[str] = Field(None, nullable=True)
 
 
-class ExperimentRead(ExperimentList, ExperimentCreate):
-    start_time_real: Optional[datetime] = Field(nullable=True)
-    end_time_real: Optional[datetime] = Field(nullable=True)
+class ExperimentRead(ExperimentList, ExperimentCreateOrUpdate):
+    start_time_real: Optional[datetime] = Field(None, nullable=True)
+    end_time_real: Optional[datetime] = Field(None, nullable=True)
     hit_count: Optional[int] = Field(0, nullable=True)
     hit_key_count: Optional[int] = Field(0, nullable=True)
     hash_set: Optional[str] = Field(None, nullable=True)
-
-
-# class ExperimentUpdateResponse(ExperimentBaseResponse):
-#     pass
 
 
 class ExperimentPagination(Pagination):

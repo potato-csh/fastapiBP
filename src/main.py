@@ -25,9 +25,7 @@ async def db_session_middleware(request: Request, call_next):
         db_session = Session(engine)
         request.state.db = db_session
         response = await call_next(request)
-        request.state.db.commit()
     except Exception as e:
-        request.state.db.rollback()
         raise e from None
     finally:
         request.state.db.close()

@@ -1,14 +1,16 @@
+from uuid import UUID
 from fastapi import APIRouter, Query, status, Path
 
 from experiment.schemas import (
+    ExperimentCreateOrUpdate,
     ExperimentPagination,
-    ExperimentRead,
-    ExperimentCreate,
+    ExperimentRead
 )
 from experiment.service import (
     get_all,
-    get_by_expid,
+    get_by_exp_id,
     create,
+    update
 )
 from database import DbSession, CommonParams
 
@@ -17,7 +19,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/experiment", status_code=status.HTTP_200_OK, response_model=ExperimentPagination
+    "", response_model=ExperimentPagination
 )
 def get_experiments(
     commons: CommonParams,
@@ -34,18 +36,26 @@ def get_experiments(
 
 
 @router.get(
-    "/experiment/{experiment_id}",
-    status_code=status.HTTP_200_OK,
+    "/{experiment_id}",
     response_model=ExperimentRead,
 )
 def get_experiment(db_session: DbSession, experiment_id: str = Path()):
-    experiment_detail = get_by_expid(session=db_session, experiment_id=experiment_id)
+    experiment_detail = get_by_exp_id(session=db_session, exp_id=experiment_id)
 
     return experiment_detail
 
 
-@router.post("/experiment", response_model=ExperimentRead)
-def create_experiment(db_session: DbSession, exp_in: ExperimentCreate):
+@router.post("", response_model=ExperimentRead)
+def create_experiment(db_session: DbSession, exp_in: ExperimentCreateOrUpdate):
     experiment = create(session=db_session, exp_in=exp_in)
 
     return experiment
+
+
+@router.put("/{experiment_id}", response_model=ExperimentRead)
+def update_experiment(db_session: DbSession, experiment_id: UUID, exp_in: ExperimentCreateOrUpdate):
+    
+    experiment = update(session=db_session, exp_id=experiment_id, exp_in=exp_in)
+
+    return experiment
+
