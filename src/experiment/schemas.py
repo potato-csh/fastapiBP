@@ -33,8 +33,8 @@ class ExperimentCreate(ExperimentBase):
     sampling_type: int = Field(0)
     testing_type: int = Field(0)
     testing_url: str
-    white_list: Optional[str] = Field(nullable=True)
-    black_list: Optional[str] = Field(nullable=True)
+    white_list: Optional[str] = Field(None, nullable=True)
+    black_list: Optional[str] = Field(None, nullable=True)
 
 
 class ExperimentRead(ExperimentList, ExperimentCreate):
