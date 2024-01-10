@@ -1,5 +1,4 @@
-from wsgiref.validate import ErrorWrapper
-from pydantic import ValidationError
+from fastapi import HTTPException, status
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
 from uuid import uuid4, UUID
@@ -27,11 +26,7 @@ def get_all(
     # 实验过滤条件
     filters = []
     if status:
-        try:
-            status_code = ExperimentStatus[status]
-            filters.append(Experiment.status == status_code.value)
-        except KeyError:
-            raise ValueError("Invalid status value")
+        filters.append(Experiment.status == ExperimentStatus[status].value)
     else:
         filters.append(Experiment.status != ExperimentStatus.DELETED.value)
     if name:
@@ -62,21 +57,10 @@ def get_all(
 def get_by_exp_id(session: Session, exp_id: UUID) -> ExperimentRead:
     stmt = select(Experiment).where(Experiment.experiment_id == str(exp_id))
     experiment = session.scalars(stmt).one_or_none()
-
     if not experiment:
-        raise ValidationError(
-            [
-                ErrorWrapper(
-                    NotFoundError(
-                        msg="Tag not found.",
-                        tag=exp_id,
-                    ),
-                    loc="experiment",
-                )
-            ],
-            model=ExperimentRead,
-        )
-
+        raise HTTPException(
+            status_code = status.HTTP_404_NOT_FOUND,
+            detail = "Item not exist")
     return experiment
 
 
