@@ -1,6 +1,6 @@
 from uuid import UUID
-from venv import create
-from fastapi import APIRouter, Query, status, Path, HTTPException, Depends
+from fastapi import APIRouter, Query, Path
+from experiment.models import ExperimentStatus
 
 from experiment.schemas import (
     ExperimentCreateOrUpdate,
@@ -8,8 +8,7 @@ from experiment.schemas import (
     ExperimentRead,
 )
 from database import DbSession, CommonParams
-from experiment.service import get_all, get_by_exp_id, delete, update
-from experiment.dependencies import validate_status
+from experiment.service import get_all, get_by_exp_id, create, update, delete
 
 router = APIRouter()
 
@@ -20,7 +19,7 @@ def get_experiments(
     name: str = Query(None),
     owner: int = Query(None),
     layer_name: str = Query(None),
-    status: str = Depends(validate_status),
+    status: ExperimentStatus = Query(None),
 ):
     experiment_list = get_all(
         name=name, owner=owner, layer_name=layer_name, status=status, **commons

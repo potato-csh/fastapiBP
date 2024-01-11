@@ -26,7 +26,7 @@ def get_all(
     # 实验过滤条件
     filters = []
     if status:
-        filters.append(Experiment.status == ExperimentStatus[status].value)
+        filters.append(Experiment.status == status.value)
     else:
         filters.append(Experiment.status != ExperimentStatus.DELETED.value)
     if name:
@@ -59,8 +59,8 @@ def get_by_exp_id(session: Session, exp_id: UUID) -> ExperimentRead:
     experiment = session.scalars(stmt).one_or_none()
     if not experiment:
         raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND,
-            detail = "Item not exist")
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item not exist"
+        )
     return experiment
 
 
