@@ -20,7 +20,7 @@ class ExperimentBase(ABTestBase):
 
 class ExperimentList(ExperimentBase):
     owner: int
-    status: int = Field(0)
+    status: str = Field("pending")
     id: PrimaryKey
     experiment_id: UUID
     created_at: datetime

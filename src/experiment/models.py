@@ -8,11 +8,11 @@ from experiment.schemas import ExperimentList, ExperimentRead
 from models import Base
 
 
-class ExperimentStatus(enum.IntEnum):
-    PENDING = 0
-    RUNNING = 1
-    STOPPED = 2
-    DELETED = 3
+class ExperimentStatus(str, enum.Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    STOPPED = "stopped"
+    DELETED = "deleted"
 
 
 class Experiment(Base):
@@ -21,7 +21,7 @@ class Experiment(Base):
     owner: Mapped[int]
     starter: Mapped[int] = mapped_column(nullable=True)
     ender: Mapped[int] = mapped_column(nullable=True)
-    status: Mapped[int] = mapped_column(default=0)
+    status: Mapped[str] = mapped_column(default="pending")
     experiment_id: Mapped[UUID] = mapped_column(String(40))
     layer_name: Mapped[str] = mapped_column(String(25))
     name: Mapped[str] = mapped_column(String(255))
