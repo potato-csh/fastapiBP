@@ -1,17 +1,14 @@
 [tool.poetry]
 name = "fastapibp"
 version = "0.1.0"
-description = "fastapi best practice for ab"
+description = "Fastapi Best Practices For AB Test Console"
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.108.0"
-uvicorn = "^0.25.0"
-pre-commit = "^3.6.0"
-sqlalchemy = "^2.0.23"
-pymysql = "^1.1.0"
+python = "^3.9"
+fastapi = {extras = ["all"], version = "^0.110.0"}
+sqlalchemy = "^2.0.28"
 
 
 [build-system]
