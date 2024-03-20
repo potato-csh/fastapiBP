@@ -1,7 +1,7 @@
-from sqlalchemy import and_, create_engine, select
+from typing import Annotated, Union
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from fastapi import Query, Request, Depends
-from typing import Annotated
 
 
 mysql_url_fmt = "mysql+pymysql://root:password@localhost:3306/ab_test"
@@ -31,7 +31,7 @@ def common_parameters(
 
 
 CommonParams = Annotated[
-    dict[str, int | str | DbSession], Depends(common_parameters)
+    dict[str, Union[int, str, DbSession]], Depends(common_parameters)
 ]
 
 # async def fetch_one(select_query: Select | Insert | Update) -> Dict[str,Any]:
