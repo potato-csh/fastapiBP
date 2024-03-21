@@ -5,7 +5,7 @@ from uuid import UUID
 from typing import Optional
 
 from models import Pagination, ABTestBase, PrimaryKey
-
+from pydantic import BaseModel
 
 # Pydantic models
 
@@ -21,10 +21,17 @@ class ExperimentBase(ABTestBase):
 class ExperimentList(ExperimentBase):
     owner: int
     status: str = Field("pending")
-    id: PrimaryKey
     experiment_id: UUID
     created_at: datetime
     updated_at: datetime
+
+
+# ExperimentListDto
+class ExperimentListDto(BaseModel):
+    experiment_name: str
+    owner: int
+    layer_name: str
+    status: str
 
 
 class ExperimentCreateOrUpdate(ExperimentBase):

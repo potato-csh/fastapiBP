@@ -1,10 +1,8 @@
-from typing import Annotated
-from fastapi import Depends, Query
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, conint
+from pydantic import BaseModel, ConfigDict, conint
 
 
 # pydantic type that limits the range of primary keys

@@ -1,11 +1,13 @@
-from typing import Any
+from typing import Any, Dict
 from starlette.config import Config
 
 
-app_configs: dict[str, Any] = {
-    "title": "ABconsole",
+app_configs: Dict[str, Any] = {
+    "title": "FastApiBP ABconsole",
     "description": "Welcome to ABconsole's API documentation",
-    "docs_url": "/docs",
+    "version": "0.1.0",
+    "openapi_url": "/api/openapi.json",
+    "docs_url": "/api/docs",
     "redoc_url": "/redoc",
 }
 
